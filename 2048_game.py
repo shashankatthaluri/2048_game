@@ -1,22 +1,22 @@
 import random, sys
 
 # Set up the constants:
-BLANK = ''  # A value that represents a blank space on the board.
+EMPTY = ''  # A value that represents an empty space on the board.
 
 
 def main():
     print('''Twenty Forty-Eight, 
     Slide all the tiles on the board in one of four directions. Tiles with
-    like numbers will combine into larger-numbered tiles. A new 2 tile is
+    similar numbers will merge into larger-numbered tiles. A new 2 tile is
     added to the board on each move. You win if you can create a 2048 tile.
-    You lose if the board fills up the tiles before then.''')
+    You lose if the board fills up with tiles before then.''')
     input('Press Enter to begin...')
 
     gameBoard = getNewBoard()
 
     while True:  # Main game loop.
         drawBoard(gameBoard)
-        print('Score:', getScore(gameBoard))
+        print('Current Score:', getScore(gameBoard))
         playerMove = askForPlayerMove()
         gameBoard = makeMove(gameBoard, playerMove)
         addTwoToBoard(gameBoard)
@@ -31,7 +31,7 @@ def getNewBoard():
     """Returns a new data structure that represents a board.
 
     It's a dictionary with keys of (x, y) tuples and values of the tile
-    at that space. The tile is either a power-of-two integer or BLANK.
+    at that space. The tile is either a power-of-two integer or EMPTY.
     The coordinates are laid out as:
        X0 1 2 3
       Y+-+-+-+-+
@@ -45,17 +45,17 @@ def getNewBoard():
        +-+-+-+-+"""
 
     newBoard = {}  # Contains the board data structure to be returned.
-    # Loop over every possible space and set all the tiles to blank:
+    # Loop over every possible space and set all the tiles to empty:
     for x in range(4):
         for y in range(4):
-            newBoard[(x, y)] = BLANK
+            newBoard[(x, y)] = EMPTY
 
     # Pick two random spaces for the two starting 2's:
     startingTwosPlaced = 0  # The number of starting spaces picked.
     while startingTwosPlaced < 2:  # Repeat for duplicate spaces.
         randomSpace = (random.randint(0, 3), random.randint(0, 3))
         # Make sure the randomly selected space isn't already taken:
-        if newBoard[randomSpace] == BLANK:
+        if newBoard[randomSpace] == EMPTY:
             newBoard[randomSpace] = 2
             startingTwosPlaced = startingTwosPlaced + 1
 
@@ -103,27 +103,27 @@ def getScore(board):
     # Loop over every space and add the tile to the score:
     for x in range(4):
         for y in range(4):
-            # Only add non-blank tiles to the score:
-            if board[(x, y)] != BLANK:
+            # Only add non-empty tiles to the score:
+            if board[(x, y)] != EMPTY:
                 score = score + board[(x, y)]
     return score
 
 
 def combineTilesInColumn(column):
-    """The column is a list of four tile. Index 0 is the "bottom" of
+    """The column is a list of four tiles. Index 0 is the "bottom" of
     the column, and tiles are pulled "down" and combine if they are the
-    same. For example, combineTilesInColumn([2, BLANK, 2, BLANK])
-    returns [4, BLANK, BLANK, BLANK]."""
+    same. For example, combineTilesInColumn([2, EMPTY, 2, EMPTY])
+    returns [4, EMPTY, EMPTY, EMPTY]."""
 
-    # Copy only the numbers (not blanks) from column to combinedTiles
-    combinedTiles = []  # A list of the non-blank tiles in column.
+    # Copy only the numbers (not empty) from column to combinedTiles
+    combinedTiles = []  # A list of the non-empty tiles in column.
     for i in range(4):
-        if column[i] != BLANK:
+        if column[i] != EMPTY:
             combinedTiles.append(column[i])
 
-    # Keep adding blanks until there are 4 tiles:
+    # Keep adding empties until there are 4 tiles:
     while len(combinedTiles) < 4:
-        combinedTiles.append(BLANK)
+        combinedTiles.append(EMPTY)
 
     # Combine numbers if the one "above" it is the same, and double it.
     for i in range(3):  # Skip index 3: it's the topmost space.
@@ -132,7 +132,7 @@ def combineTilesInColumn(column):
             # Move the tiles above it down one space:
             for aboveIndex in range(i + 1, 3):
                 combinedTiles[aboveIndex] = combinedTiles[aboveIndex + 1]
-            combinedTiles[3] = BLANK  # Topmost space is always BLANK.
+            combinedTiles[3] = EMPTY  # Topmost space is always EMPTY.
     return combinedTiles
 
 
@@ -197,7 +197,7 @@ def askForPlayerMove():
     """Asks the player for the direction of their next move (or quit).
 
     Ensures they enter a valid move: either 'W', 'A', 'S' or 'D'."""
-    print('Enter move: (WASD or Q to quit)')
+    print('Enter your move: (WASD or Q to quit)')
     while True:  # Keep looping until they enter a valid move.
         move = input('> ').upper()
         if move == 'Q':
@@ -216,20 +216,20 @@ def addTwoToBoard(board):
     """Adds a new 2 tile randomly to the board."""
     while True:
         randomSpace = (random.randint(0, 3), random.randint(0, 3))
-        if board[randomSpace] == BLANK:
+        if board[randomSpace] == EMPTY:
             board[randomSpace] = 2
-            return  # Return after finding one non-blank tile.
+            return  # Return after finding one non-empty tile.
 
 
 def isFull(board):
-    """Returns True if the board data structure has no blanks."""
+    """Returns True if the board data structure has no empty spaces."""
     # Loop over every space on the board:
     for x in range(4):
         for y in range(4):
-            # If a space is blank, return False:
-            if board[(x, y)] == BLANK:
+            # If a space is empty, return False:
+            if board[(x, y)] == EMPTY:
                 return False
-    return True  # No space is blank, so return True.
+    return True  # No space is empty, so return True.
 
 
 # If this program was run (instead of imported), run the game:
